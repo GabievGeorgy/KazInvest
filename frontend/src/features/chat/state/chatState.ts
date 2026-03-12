@@ -11,7 +11,8 @@ export type ChatAction =
   | { type: 'draftChanged'; draft: string }
   | { type: 'submissionStarted'; message: ChatMessage }
   | { type: 'submissionSucceeded'; message: ChatMessage }
-  | { type: 'submissionFailed'; errorMessage: string };
+  | { type: 'submissionFailed'; errorMessage: string }
+  | { type: 'chatCleared' };
 
 export const initialChatState: ChatState = {
   draft: '',
@@ -26,6 +27,7 @@ export function chatStateReducer(state: ChatState, action: ChatAction): ChatStat
       return {
         ...state,
         draft: action.draft,
+        errorMessage: null,
       };
     case 'submissionStarted':
       return {
@@ -47,6 +49,8 @@ export function chatStateReducer(state: ChatState, action: ChatAction): ChatStat
         isSubmitting: false,
         errorMessage: action.errorMessage,
       };
+    case 'chatCleared':
+      return initialChatState;
     default:
       return state;
   }

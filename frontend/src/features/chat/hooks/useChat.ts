@@ -14,6 +14,10 @@ export function useChat() {
     void submitChatAsync();
   }
 
+  function clearChat() {
+    dispatch({ type: 'chatCleared' });
+  }
+
   async function submitChatAsync() {
     const message = state.draft.trim();
 
@@ -48,7 +52,9 @@ export function useChat() {
     isSubmitting: state.isSubmitting,
     errorMessage: state.errorMessage,
     hasMessages: state.messages.length > 0,
+    canSubmit: state.draft.trim().length > 0 && !state.isSubmitting,
     setDraft,
     submitChat,
+    clearChat,
   };
 }

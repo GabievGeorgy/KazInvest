@@ -1,8 +1,14 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { afterEach } from 'vitest';
 import App from './App';
 
 describe('App', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
   it('renders the chat landing headline', () => {
     render(<App />);
 
@@ -46,8 +52,98 @@ describe('App', () => {
     expect(screen.getByText('Assistant')).toBeInTheDocument();
     expect(screen.getByText('Hello back')).toBeInTheDocument();
     expect(scrollIntoViewMock).toHaveBeenCalled();
+  });
 
-    scrollIntoViewMock.mockRestore();
-    vi.unstubAllGlobals();
+  it('disables send and shows a spinner while waiting for the response', async () => {
+    const user = userEvent.setup();
+    let resolveResponse!: (response: Response) => void;
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>().mockImplementation(
+        () =>
+          new Promise<Response>((resolve) => {
+            resolveResponse = resolve;
+          }),
+      ),
+    );
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox', { name: /ask a question/i });
+    await user.type(input, 'Hello');
+    await user.keyboard('{Enter}');
+
+    expect(screen.getByRole('button', { name: /send message/i })).toBeDisabled();
+    expect(screen.getByRole('status', { name: /loading response/i })).toBeInTheDocument();
+
+    resolveResponse(
+      new Response(JSON.stringify({ reply: 'Hello back', model: 'openrouter/model' }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }),
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByRole('status', { name: /loading response/i })).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('textbox', { name: /ask a question/i })).not.toBeDisabled();
+  });
+
+  it('shows an error message when the chat request fails', async () => {
+    const user = userEvent.setup();
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(JSON.stringify({ detail: 'Provider timeout.' }), {
+          status: 504,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox', { name: /ask a question/i });
+    await user.type(input, 'Hello');
+    await user.keyboard('{Enter}');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/provider timeout\./i);
+  });
+
+  it('clears the conversation and returns to the empty state', async () => {
+    const user = userEvent.setup();
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(JSON.stringify({ reply: 'Hello back', model: 'openrouter/model' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox', { name: /ask a question/i });
+    await user.type(input, 'Hello');
+    await user.keyboard('{Enter}');
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /clear chat/i })).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByRole('button', { name: /clear chat/i }));
+
+    expect(
+      screen.getByRole('heading', {
+        name: /what would you like to know\?/i,
+      }),
+    ).toBeInTheDocument();
+
+    expect(screen.queryByLabelText(/chat conversation/i)).not.toBeInTheDocument();
   });
 });

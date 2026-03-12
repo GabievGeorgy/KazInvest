@@ -42,6 +42,10 @@
   color: var(--text-muted);
 }
 
+.field input:disabled {
+  cursor: default;
+}
+
 @media (max-width: 640px) {
   .input {
     width: 100%;

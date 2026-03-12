@@ -57,4 +57,32 @@ describe('chatStateReducer', () => {
     expect(nextState.isSubmitting).toBe(false);
     expect(nextState.errorMessage).toBe('Rate limit exceeded.');
   });
+
+  it('clears the error when the draft changes', () => {
+    const failedState = chatStateReducer(initialChatState, {
+      type: 'submissionFailed',
+      errorMessage: 'Rate limit exceeded.',
+    });
+
+    const nextState = chatStateReducer(failedState, {
+      type: 'draftChanged',
+      draft: 'Try again',
+    });
+
+    expect(nextState.draft).toBe('Try again');
+    expect(nextState.errorMessage).toBeNull();
+  });
+
+  it('resets the chat to its initial state', () => {
+    const activeState = chatStateReducer(initialChatState, {
+      type: 'submissionStarted',
+      message: createChatMessage('user', 'Hello'),
+    });
+
+    const nextState = chatStateReducer(activeState, {
+      type: 'chatCleared',
+    });
+
+    expect(nextState).toEqual(initialChatState);
+  });
 });

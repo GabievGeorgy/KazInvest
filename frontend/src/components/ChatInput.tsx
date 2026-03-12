@@ -9,6 +9,8 @@ type ChatInputProps = {
   onChange: (value: string) => void;
   onSubmit: () => void;
   onVoiceInput: () => void;
+  isSubmitting: boolean;
+  canSubmit: boolean;
 };
 
 export function ChatInput({
@@ -16,6 +18,8 @@ export function ChatInput({
   onChange,
   onSubmit,
   onVoiceInput,
+  isSubmitting,
+  canSubmit,
 }: ChatInputProps) {
   const { isMobile } = useViewport();
   const placeholder = isMobile ? 'Ask anything' : 'Ask whatever you want';
@@ -27,7 +31,7 @@ export function ChatInput({
 
   return (
     <form className={styles.input} onSubmit={handleSubmit}>
-      <VoiceInputButton onClick={onVoiceInput} />
+      <VoiceInputButton onClick={onVoiceInput} disabled={isSubmitting} />
 
       <div className={styles.field}>
         <input
@@ -38,10 +42,11 @@ export function ChatInput({
           placeholder={placeholder}
           aria-label="Ask a question"
           autoComplete="off"
+          disabled={isSubmitting}
         />
       </div>
 
-      <SendMessageButton />
+      <SendMessageButton disabled={!canSubmit} isLoading={isSubmitting} />
     </form>
   );
 }

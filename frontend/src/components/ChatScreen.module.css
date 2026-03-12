@@ -16,11 +16,20 @@
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: 24px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 16px;
+}
+
+.toolbar {
+  grid-row: 1;
+  width: var(--chat-column-width);
+  max-width: 100%;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .body {
+  grid-row: 2;
   width: var(--chat-column-width);
   max-width: 100%;
   min-height: 0;
@@ -33,6 +42,11 @@
 }
 
 .inputSlot {
+  grid-row: 3;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   width: var(--chat-column-width);
   padding-top: 8px;
 }
