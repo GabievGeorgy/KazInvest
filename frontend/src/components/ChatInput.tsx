@@ -1,4 +1,4 @@
-import { SubmitEvent } from 'react';
+import { SubmitEvent, useEffect, useRef } from 'react';
 import { useViewport } from '../contexts/useViewport';
 import { SendMessageButton } from './Buttons/SendMessageButton';
 import { VoiceInputButton } from './Buttons/VoiceInputButton';
@@ -22,12 +22,22 @@ export function ChatInput({
   canSubmit,
 }: ChatInputProps) {
   const { isMobile } = useViewport();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const shouldRestoreFocusRef = useRef(false);
   const placeholder = isMobile ? 'Ask anything' : 'Ask whatever you want';
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    shouldRestoreFocusRef.current = document.activeElement === inputRef.current;
     onSubmit();
   }
+
+  useEffect(() => {
+    if (!isSubmitting && shouldRestoreFocusRef.current) {
+      inputRef.current?.focus();
+      shouldRestoreFocusRef.current = false;
+    }
+  }, [isSubmitting]);
 
   return (
     <form className={styles.input} onSubmit={handleSubmit}>
@@ -35,6 +45,7 @@ export function ChatInput({
 
       <div className={styles.field}>
         <input
+          ref={inputRef}
           type="text"
           name="message"
           value={value}
@@ -42,7 +53,8 @@ export function ChatInput({
           placeholder={placeholder}
           aria-label="Ask a question"
           autoComplete="off"
-          disabled={isSubmitting}
+          readOnly={isSubmitting}
+          aria-busy={isSubmitting}
         />
       </div>
 

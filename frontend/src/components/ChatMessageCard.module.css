@@ -28,7 +28,7 @@
 
 .model {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-caption);
   line-height: 1.3;
 }
 

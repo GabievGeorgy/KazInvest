@@ -92,6 +92,32 @@ describe('App', () => {
     expect(screen.getByRole('textbox', { name: /ask a question/i })).not.toBeDisabled();
   });
 
+  it('keeps the input focused after submitting with enter', async () => {
+    const user = userEvent.setup();
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(JSON.stringify({ reply: 'Hello back', model: 'openrouter/model' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+
+    render(<App />);
+
+    const input = screen.getByRole('textbox', { name: /ask a question/i });
+    input.focus();
+
+    await user.type(input, 'Hello');
+    await user.keyboard('{Enter}');
+
+    await waitFor(() => {
+      expect(input).toHaveFocus();
+    });
+  });
+
   it('shows an error message when the chat request fails', async () => {
     const user = userEvent.setup();
 

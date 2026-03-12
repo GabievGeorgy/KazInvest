@@ -5,6 +5,13 @@
   font-family: "Inter", "Segoe UI Variable Display", "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  --chat-column-width: min(720px, 100%);
+  --font-size-display: clamp(2.05rem, 4vw, 3.15rem);
+  --font-size-heading: clamp(1.8rem, 3.2vw, 2.55rem);
+  --font-size-body: clamp(1.06rem, 1.7vw, 1.34rem);
+  --font-size-caption: 0.95rem;
+  --line-height-tight: 1.1;
+  --line-height-body: 1.45;
   --page-background: #072e6a;
   --surface-brand: #1c4c9b;
   --text-primary: #f0f3f7;
