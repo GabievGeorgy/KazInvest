@@ -1,7 +1,6 @@
 using KazInvest.Api.Contracts;
 using KazInvest.Api.Configuration;
 using KazInvest.Api.Handlers.Chat;
-using KazInvest.Api.Services;
 using KazInvest.Api.Services.OpenRouter;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
@@ -55,7 +54,6 @@ builder.Services.AddCors(
                     .AllowAnyMethod();
             });
     });
-builder.Services.AddSingleton<PortfolioSnapshotService>();
 
 var app = builder.Build();
 
@@ -71,10 +69,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapGet("/health", () => TypedResults.Ok(new { status = "ok" }));
-
-app.MapGet(
-    "/api/portfolio/summary",
-    (PortfolioSnapshotService service) => TypedResults.Ok(service.GetStartupSummary()));
 
 app.MapPost(
         "/api/chat",
