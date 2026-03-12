@@ -1,0 +1,11 @@
+.conversation {
+  width: var(--chat-column-width);
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.endAnchor {
+  height: 1px;
+}

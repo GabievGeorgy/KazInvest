@@ -3,26 +3,47 @@
 }
 
 .panel {
-  min-height: 100vh;
+  height: 100vh;
+  box-sizing: border-box;
   display: flex;
   padding: clamp(48px, 8vw, 96px) clamp(28px, 7vw, 96px);
   background: var(--page-background);
+  overflow: hidden;
 }
 
 .content {
+  --chat-column-width: min(610px, 100%);
   flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 24px;
+}
+
+.body {
+  width: var(--chat-column-width);
+  max-width: 100%;
   min-height: 0;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-gutter: stable;
 }
 
 .inputSlot {
-  margin-top: auto;
+  width: var(--chat-column-width);
+  padding-top: 8px;
 }
 
 @media (max-width: 640px) {
   .panel {
-    min-height: 100vh;
+    height: 100vh;
     padding: 32px 22px 28px;
+  }
+
+  .body {
+    padding-right: 0;
   }
 }
