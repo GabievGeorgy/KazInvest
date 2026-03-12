@@ -1,14 +1,14 @@
-import { SubmitEvent, useEffect, useRef } from 'react';
+import { ChatErrorNotice } from './ChatErrorNotice';
+import { ChatTextEntry } from './ChatTextEntry';
+import { ChatVoiceEntry } from './ChatVoiceEntry';
+import { useChatInputVoice } from './hooks/useChatInputVoice';
 import { useViewport } from '../contexts/useViewport';
-import { SendMessageButton } from './Buttons/SendMessageButton';
-import { VoiceInputButton } from './Buttons/VoiceInputButton';
-import styles from './ChatInput.module.css';
 
 type ChatInputProps = {
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
-  onVoiceInput: () => void;
+  onVoiceInput: (transcript: string) => void;
   isSubmitting: boolean;
   canSubmit: boolean;
 };
@@ -22,43 +22,48 @@ export function ChatInput({
   canSubmit,
 }: ChatInputProps) {
   const { isMobile } = useViewport();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const shouldRestoreFocusRef = useRef(false);
   const placeholder = isMobile ? 'Ask anything' : 'Ask whatever you want';
-
-  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
-    shouldRestoreFocusRef.current = document.activeElement === inputRef.current;
-    onSubmit();
-  }
-
-  useEffect(() => {
-    if (!isSubmitting && shouldRestoreFocusRef.current) {
-      inputRef.current?.focus();
-      shouldRestoreFocusRef.current = false;
-    }
-  }, [isSubmitting]);
+  const {
+    errorMessage: voiceErrorMessage,
+    handleSubmit,
+    inputRef,
+    isVoiceBusy,
+    isVoiceModeActive,
+    isVoiceProcessing,
+    isVoiceRequesting,
+    startRecording,
+    cancelRecording,
+    confirmRecording,
+  } = useChatInputVoice({
+    isSubmitting,
+    onSubmit,
+    onVoiceInput,
+  });
 
   return (
-    <form className={styles.input} onSubmit={handleSubmit}>
-      <VoiceInputButton onClick={onVoiceInput} disabled={isSubmitting} />
+    <>
+      {voiceErrorMessage ? <ChatErrorNotice message={voiceErrorMessage} /> : null}
 
-      <div className={styles.field}>
-        <input
-          ref={inputRef}
-          type="text"
-          name="message"
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder={placeholder}
-          aria-label="Ask a question"
-          autoComplete="off"
-          readOnly={isSubmitting}
-          aria-busy={isSubmitting}
+      {isVoiceModeActive ? (
+        <ChatVoiceEntry
+          isProcessing={isVoiceProcessing}
+          onCancel={cancelRecording}
+          onConfirm={confirmRecording}
         />
-      </div>
-
-      <SendMessageButton disabled={!canSubmit} isLoading={isSubmitting} />
-    </form>
+      ) : (
+        <ChatTextEntry
+          value={value}
+          onChange={onChange}
+          onSubmit={handleSubmit}
+          onVoiceInputStart={startRecording}
+          inputRef={inputRef}
+          placeholder={placeholder}
+          isSubmitting={isSubmitting}
+          canSubmit={canSubmit}
+          isVoiceBusy={isVoiceBusy}
+          isVoiceRequesting={isVoiceRequesting}
+        />
+      )}
+    </>
   );
 }

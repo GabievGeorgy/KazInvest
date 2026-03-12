@@ -39,7 +39,7 @@ export function ChatScreen() {
               value={draft}
               onChange={setDraft}
               onSubmit={submitChat}
-              onVoiceInput={() => undefined}
+              onVoiceInput={setDraft}
               isSubmitting={isSubmitting}
               canSubmit={canSubmit}
             />
