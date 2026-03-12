@@ -29,7 +29,7 @@ describe('App', () => {
     vi.stubGlobal(
       'fetch',
       fetchMock.mockResolvedValue(
-        new Response(JSON.stringify({ reply: 'Hello back', model: 'openrouter/model' }), {
+        new Response(JSON.stringify({ reply: '**Hello** back', model: 'openrouter/model' }), {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
         }),
@@ -48,9 +48,10 @@ describe('App', () => {
 
     expect(screen.getByLabelText(/chat conversation/i)).toBeInTheDocument();
     expect(screen.getByText('You')).toBeInTheDocument();
-    expect(screen.getByText('Hello')).toBeInTheDocument();
+    expect(screen.getByText('Hello', { selector: 'p' })).toBeInTheDocument();
     expect(screen.getByText('Assistant')).toBeInTheDocument();
-    expect(screen.getByText('Hello back')).toBeInTheDocument();
+    expect(screen.getByText('Hello', { selector: 'strong' })).toBeInTheDocument();
+    expect(screen.getByText(/back/i)).toBeInTheDocument();
     expect(scrollIntoViewMock).toHaveBeenCalled();
   });
 

@@ -1,3 +1,4 @@
+import { ChatMarkdown } from './ChatMarkdown';
 import type { ChatMessage } from '../features/chat/models/chatMessage';
 import { BodyText, SectionHeading } from './Typography';
 import styles from './ChatMessageCard.module.css';
@@ -21,7 +22,11 @@ export function ChatMessageCard({ message }: ChatMessageCardProps) {
         {message.model ? <span className={styles.model}>{message.model}</span> : null}
       </header>
 
-      <BodyText className={styles.content}>{message.content}</BodyText>
+      {isAssistant ? (
+        <ChatMarkdown content={message.content} />
+      ) : (
+        <BodyText className={styles.content}>{message.content}</BodyText>
+      )}
     </article>
   );
 }

@@ -1,0 +1,80 @@
+.markdown {
+  color: var(--text-primary);
+  font-size: clamp(1.15rem, 1.9vw, 1.5rem);
+  line-height: 1.5;
+}
+
+.markdown > :first-child {
+  margin-top: 0;
+}
+
+.markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown p,
+.markdown ul,
+.markdown ol,
+.markdown pre,
+.markdown blockquote,
+.markdown table {
+  margin: 14px 0 0;
+}
+
+.markdown ul,
+.markdown ol {
+  padding-left: 1.35em;
+}
+
+.markdown li + li {
+  margin-top: 0.35em;
+}
+
+.markdown a {
+  color: #d3e4ff;
+}
+
+.markdown code {
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 0.9em;
+}
+
+.markdown :not(pre) > code {
+  padding: 0.12em 0.32em;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.markdown pre {
+  overflow-x: auto;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(4, 18, 47, 0.52);
+}
+
+.markdown pre code {
+  display: block;
+  white-space: pre;
+}
+
+.markdown blockquote {
+  padding-left: 14px;
+  border-left: 3px solid rgba(255, 255, 255, 0.18);
+  color: var(--text-muted);
+}
+
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.markdown th,
+.markdown td {
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  text-align: left;
+}
+
+.markdown th {
+  font-weight: 600;
+}
