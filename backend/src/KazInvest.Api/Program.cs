@@ -2,9 +2,19 @@ using KazInvest.Api.Contracts;
 using KazInvest.Api.Configuration;
 using KazInvest.Api.Services;
 using KazInvest.Api.Services.OpenRouter;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddOptions<FrontendOptions>()
+    .Bind(builder.Configuration.GetSection(FrontendOptions.SectionName))
+    .ValidateDataAnnotations()
+    .Validate(
+        static options => options.AllowedOrigins.All(origin => Uri.TryCreate(origin, UriKind.Absolute, out _)),
+        "Frontend:AllowedOrigins must contain only absolute URIs.")
+    .ValidateOnStart();
 
 builder.Services
     .AddOptions<OpenRouterOptions>()
@@ -27,11 +37,29 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddProblemDetails();
+builder.Services.AddCors(
+    options =>
+    {
+        options.AddPolicy(
+            "frontend",
+            policy =>
+            {
+                var allowedOrigins = builder.Configuration
+                    .GetSection(FrontendOptions.SectionName)
+                    .Get<FrontendOptions>()?.AllowedOrigins ?? ["http://localhost:5173"];
+
+                policy
+                    .WithOrigins(allowedOrigins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+    });
 builder.Services.AddSingleton<PortfolioSnapshotService>();
 
 var app = builder.Build();
 
 app.UseExceptionHandler();
+app.UseCors("frontend");
 
 if (app.Environment.IsDevelopment())
 {
@@ -49,9 +77,10 @@ app.MapGet(
 
 app.MapPost(
         "/api/chat",
-        async Task<IResult> (
+        async Task<Results<Ok<ChatResponse>, ValidationProblem, ProblemHttpResult>> (
             ChatRequest request,
             IOpenRouterChatClient chatClient,
+            ILogger<Program> logger,
             CancellationToken cancellationToken) =>
         {
             if (string.IsNullOrWhiteSpace(request.Message))
@@ -69,30 +98,18 @@ app.MapPost(
 
                 return TypedResults.Ok(new ChatResponse(completion.Content, completion.Model));
             }
-            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            catch (ChatProviderException exception)
             {
-                return TypedResults.Problem(
-                    title: "Chat provider timeout",
-                    detail: "The chat provider did not respond in time.",
-                    statusCode: StatusCodes.Status504GatewayTimeout);
-            }
-            catch (HttpRequestException exception)
-            {
-                var detail = exception.StatusCode is null
-                    ? "The chat provider request failed."
-                    : $"The chat provider returned {(int)exception.StatusCode} {exception.StatusCode}.";
+                logger.LogWarning(
+                    exception,
+                    "Chat request failed with provider error type {ErrorType} and status code {StatusCode}.",
+                    exception.ErrorType,
+                    exception.StatusCode);
 
                 return TypedResults.Problem(
-                    title: "Chat provider request failed",
-                    detail: detail,
-                    statusCode: StatusCodes.Status502BadGateway);
-            }
-            catch (InvalidOperationException exception)
-            {
-                return TypedResults.Problem(
-                    title: "Invalid chat provider response",
-                    detail: exception.Message,
-                    statusCode: StatusCodes.Status502BadGateway);
+                    title: exception.Title,
+                    detail: exception.Detail,
+                    statusCode: exception.StatusCode);
             }
         })
     .WithName("CreateChatCompletion");

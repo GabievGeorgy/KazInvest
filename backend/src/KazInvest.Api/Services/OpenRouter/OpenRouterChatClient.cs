@@ -2,52 +2,78 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using KazInvest.Api.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace KazInvest.Api.Services.OpenRouter;
 
-public sealed class OpenRouterChatClient(HttpClient httpClient, IOptions<OpenRouterOptions> options) : IOpenRouterChatClient
+public sealed class OpenRouterChatClient(
+    HttpClient httpClient,
+    IOptions<OpenRouterOptions> options,
+    ILogger<OpenRouterChatClient> logger) : IOpenRouterChatClient
 {
     private readonly HttpClient _httpClient = httpClient;
     private readonly OpenRouterOptions _options = options.Value;
+    private readonly ILogger<OpenRouterChatClient> _logger = logger;
 
     public async Task<OpenRouterChatCompletion> CreateCompletionAsync(
         string message,
         CancellationToken cancellationToken = default)
     {
+        if (string.IsNullOrWhiteSpace(_options.ApiKey))
+        {
+            throw ChatProviderException.Configuration("OpenRouter API key is not configured.");
+        }
+
         var request = new OpenRouterChatRequest(
             _options.Model,
             [new OpenRouterChatMessage("user", message)]);
 
-        using var response = await _httpClient.PostAsJsonAsync(
-            _options.ChatCompletionsPath,
-            request,
-            cancellationToken);
-
-        response.EnsureSuccessStatusCode();
-
-        var payload = await response.Content.ReadFromJsonAsync<OpenRouterChatResponse>(cancellationToken);
-
-        if (payload?.Choices is not [{ Message.Content: { } content }])
+        try
         {
-            throw new InvalidOperationException("OpenRouter response did not contain a chat completion.");
-        }
+            using var response = await _httpClient.PostAsJsonAsync(
+                _options.ChatCompletionsPath,
+                request,
+                cancellationToken);
 
-        return new OpenRouterChatCompletion(content, payload.Model);
+            response.EnsureSuccessStatusCode();
+
+            var payload = await response.Content.ReadFromJsonAsync<OpenRouterChatResponse>(cancellationToken);
+
+            if (payload?.Choices is not [{ Message.Content: { } content }])
+            {
+                throw ChatProviderException.InvalidResponse(
+                    "OpenRouter response did not contain a chat completion.");
+            }
+
+            return new OpenRouterChatCompletion(content, payload.Model);
+        }
+        catch (OperationCanceledException exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            _logger.LogWarning(exception, "OpenRouter request timed out.");
+            throw ChatProviderException.Timeout(exception);
+        }
+        catch (HttpRequestException exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "OpenRouter request failed with status code {StatusCode}.",
+                exception.StatusCode);
+            throw ChatProviderException.UpstreamFailure(exception.StatusCode, exception);
+        }
     }
 
     public static void ConfigureHttpClient(HttpClient httpClient, OpenRouterOptions options)
     {
         httpClient.BaseAddress = new Uri(options.BaseUrl, UriKind.Absolute);
         httpClient.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+        httpClient.DefaultRequestHeaders.Accept.Clear();
         httpClient.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
 
-        if (!string.IsNullOrWhiteSpace(options.ApiKey))
-        {
-            httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", options.ApiKey);
-        }
+        httpClient.DefaultRequestHeaders.Authorization = string.IsNullOrWhiteSpace(options.ApiKey)
+            ? null
+            : new AuthenticationHeaderValue("Bearer", options.ApiKey);
 
         if (!string.IsNullOrWhiteSpace(options.Referrer))
         {
@@ -78,4 +104,3 @@ public sealed record OpenRouterChatCompletion(string Content, string Model);
 public sealed record OpenRouterChatMessage(
     [property: JsonPropertyName("role")] string Role,
     [property: JsonPropertyName("content")] string Content);
-

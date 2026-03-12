@@ -53,12 +53,24 @@ public class ChatEndpointTests
     {
         await using var factory = CreateFactory(new StubOpenRouterChatClient(
             _ => Task.FromException<OpenRouterChatCompletion>(
-                new HttpRequestException("provider failed", null, HttpStatusCode.TooManyRequests))));
+                ChatProviderException.UpstreamFailure(HttpStatusCode.TooManyRequests))));
         using var client = factory.CreateClient();
 
         var response = await client.PostAsJsonAsync("/api/chat", new ChatRequest("Hello"));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
+    }
+
+    [TestMethod]
+    public async Task Post_Chat_WhenProviderTimesOut_ReturnsGatewayTimeout()
+    {
+        await using var factory = CreateFactory(new StubOpenRouterChatClient(
+            _ => Task.FromException<OpenRouterChatCompletion>(ChatProviderException.Timeout())));
+        using var client = factory.CreateClient();
+
+        var response = await client.PostAsJsonAsync("/api/chat", new ChatRequest("Hello"));
+
+        response.StatusCode.Should().Be(HttpStatusCode.GatewayTimeout);
     }
 
     private static WebApplicationFactory<Program> CreateFactory(IOpenRouterChatClient chatClient)
