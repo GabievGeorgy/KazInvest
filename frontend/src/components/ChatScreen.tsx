@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { ChatInput } from './ChatInput';
 import { EmptyChatState } from './EmptyChatState';
+import { useChat } from '../features/chat/hooks/useChat';
 import styles from './ChatScreen.module.css';
 
 export function ChatScreen() {
-  const [message, setMessage] = useState('');
+  const { draft, setDraft, submitChat } = useChat();
 
   return (
     <main className={styles.pageShell}>
@@ -14,9 +14,9 @@ export function ChatScreen() {
 
           <div className={styles.inputSlot}>
             <ChatInput
-              value={message}
-              onChange={setMessage}
-              onSubmit={() => undefined}
+              value={draft}
+              onChange={setDraft}
+              onSubmit={submitChat}
               onVoiceInput={() => undefined}
             />
           </div>
