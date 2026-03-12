@@ -1,3 +1,4 @@
+using KazInvest.Api.Contracts;
 using KazInvest.Api.Configuration;
 using KazInvest.Api.Services;
 using KazInvest.Api.Services.OpenRouter;
@@ -45,6 +46,56 @@ app.MapGet("/health", () => TypedResults.Ok(new { status = "ok" }));
 app.MapGet(
     "/api/portfolio/summary",
     (PortfolioSnapshotService service) => TypedResults.Ok(service.GetStartupSummary()));
+
+app.MapPost(
+        "/api/chat",
+        async Task<IResult> (
+            ChatRequest request,
+            IOpenRouterChatClient chatClient,
+            CancellationToken cancellationToken) =>
+        {
+            if (string.IsNullOrWhiteSpace(request.Message))
+            {
+                return TypedResults.ValidationProblem(
+                    new Dictionary<string, string[]>
+                    {
+                        ["message"] = ["Message is required."],
+                    });
+            }
+
+            try
+            {
+                var completion = await chatClient.CreateCompletionAsync(request.Message, cancellationToken);
+
+                return TypedResults.Ok(new ChatResponse(completion.Content, completion.Model));
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                return TypedResults.Problem(
+                    title: "Chat provider timeout",
+                    detail: "The chat provider did not respond in time.",
+                    statusCode: StatusCodes.Status504GatewayTimeout);
+            }
+            catch (HttpRequestException exception)
+            {
+                var detail = exception.StatusCode is null
+                    ? "The chat provider request failed."
+                    : $"The chat provider returned {(int)exception.StatusCode} {exception.StatusCode}.";
+
+                return TypedResults.Problem(
+                    title: "Chat provider request failed",
+                    detail: detail,
+                    statusCode: StatusCodes.Status502BadGateway);
+            }
+            catch (InvalidOperationException exception)
+            {
+                return TypedResults.Problem(
+                    title: "Invalid chat provider response",
+                    detail: exception.Message,
+                    statusCode: StatusCodes.Status502BadGateway);
+            }
+        })
+    .WithName("CreateChatCompletion");
 
 app.Run();
 
