@@ -1,0 +1,15 @@
+.badge {
+  width: 52px;
+  height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: var(--surface-brand);
+  box-shadow: var(--badge-shadow);
+}
+
+.icon {
+  width: 26px;
+  height: 26px;
+}

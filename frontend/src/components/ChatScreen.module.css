@@ -1,0 +1,28 @@
+.pageShell {
+  min-height: 100vh;
+}
+
+.panel {
+  min-height: 100vh;
+  display: flex;
+  padding: clamp(48px, 8vw, 96px) clamp(28px, 7vw, 96px);
+  background: var(--page-background);
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputSlot {
+  margin-top: auto;
+}
+
+@media (max-width: 640px) {
+  .panel {
+    min-height: 100vh;
+    padding: 32px 22px 28px;
+  }
+}

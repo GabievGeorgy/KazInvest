@@ -4,6 +4,6 @@ test('shows the starter screen', async ({ page }) => {
   await page.goto('/');
 
   await expect(
-    page.getByRole('heading', { name: /react frontend and \.net 10 api scaffold/i }),
+    page.getByRole('heading', { name: /what would you like to know\?/i }),
   ).toBeVisible();
 });

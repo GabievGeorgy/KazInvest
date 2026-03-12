@@ -1,0 +1,5 @@
+.button {
+  align-self: stretch;
+  background: var(--surface-brand);
+  box-shadow: var(--button-shadow);
+}

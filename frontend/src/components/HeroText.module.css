@@ -1,0 +1,19 @@
+.content {
+  margin-top: 48px;
+  max-width: 760px;
+}
+
+.description {
+  margin: 26px 0 0;
+  max-width: 520px;
+}
+
+@media (max-width: 640px) {
+  .content {
+    margin-top: 32px;
+  }
+
+  .description {
+    max-width: 100%;
+  }
+}

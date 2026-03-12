@@ -1,0 +1,30 @@
+.heroHeading {
+  margin: 0;
+  max-width: 820px;
+  font-size: clamp(2.3rem, 4.4vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  color: var(--text-primary);
+}
+
+.sectionHeading {
+  margin: 0 0 18px;
+  font-size: clamp(1.95rem, 3.6vw, 3rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.bodyText {
+  margin: 0;
+  font-size: clamp(1.15rem, 1.9vw, 1.5rem);
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.uiText {
+  font-size: clamp(1.15rem, 1.9vw, 1.5rem);
+  line-height: 1.4;
+  color: var(--text-muted);
+}
