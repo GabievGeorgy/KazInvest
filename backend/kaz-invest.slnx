@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/KazInvest.Api/KazInvest.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/KazInvest.Api.IntegrationTests/KazInvest.Api.IntegrationTests.csproj" />
+    <Project Path="tests/KazInvest.Api.UnitTests/KazInvest.Api.UnitTests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,16 @@
+<Project Sdk="MSTest.Sdk">
+  <PropertyGroup>
+    <RootNamespace>KazInvest.Api.IntegrationTests</RootNamespace>
+    <UseVSTest>true</UseVSTest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="MSTest.Analyzers" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\KazInvest.Api\KazInvest.Api.csproj" />
+  </ItemGroup>
+</Project>
