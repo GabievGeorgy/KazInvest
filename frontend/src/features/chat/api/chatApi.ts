@@ -1,8 +1,14 @@
 import { getApiBaseUrl } from '../../../lib/config';
+import type { ChatMessageRole } from '../models/chatMessage';
 
 export type CreateChatCompletionResponse = {
   reply: string;
   model: string;
+};
+
+export type ChatRequestMessage = {
+  role: ChatMessageRole;
+  content: string;
 };
 
 type ProblemDetails = {
@@ -49,7 +55,7 @@ async function readProblemDetails(response: Response): Promise<ProblemDetails | 
 }
 
 export async function createChatCompletion(
-  message: string,
+  messages: ChatRequestMessage[],
   signal?: AbortSignal,
 ): Promise<CreateChatCompletionResponse> {
   const response = await fetch(`${getApiBaseUrl()}/api/chat`, {
@@ -57,7 +63,7 @@ export async function createChatCompletion(
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ messages }),
     signal,
   });
 

@@ -21,14 +21,24 @@ describe('createChatCompletion', () => {
       }),
     );
 
-    const response = await createChatCompletion('Hello');
+    const response = await createChatCompletion([
+      { role: 'user', content: 'Hello' },
+      { role: 'assistant', content: 'Hi there' },
+      { role: 'user', content: 'Can you elaborate?' },
+    ]);
 
     expect(fetchMock).toHaveBeenCalledWith(
       'http://localhost:5000/api/chat',
       expect.objectContaining({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'Hello' }),
+        body: JSON.stringify({
+          messages: [
+            { role: 'user', content: 'Hello' },
+            { role: 'assistant', content: 'Hi there' },
+            { role: 'user', content: 'Can you elaborate?' },
+          ],
+        }),
       }),
     );
 
@@ -46,7 +56,7 @@ describe('createChatCompletion', () => {
       }),
     );
 
-    await expect(createChatCompletion('Hello')).rejects.toEqual(
+    await expect(createChatCompletion([{ role: 'user', content: 'Hello' }])).rejects.toEqual(
       new ChatApiError('Provider timeout.', 504),
     );
   });

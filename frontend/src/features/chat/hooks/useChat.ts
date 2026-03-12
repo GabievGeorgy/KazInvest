@@ -1,7 +1,14 @@
 import { useReducer } from 'react';
 import { createChatCompletion, getChatErrorMessage } from '../api/chatApi';
-import { createChatMessage } from '../models/chatMessage';
+import { createChatMessage, type ChatMessage } from '../models/chatMessage';
 import { chatStateReducer, initialChatState } from '../state/chatState';
+
+function toRequestMessages(messages: ChatMessage[]) {
+  return messages.map((message) => ({
+    role: message.role,
+    content: message.content,
+  }));
+}
 
 export function useChat() {
   const [state, dispatch] = useReducer(chatStateReducer, initialChatState);
@@ -25,13 +32,16 @@ export function useChat() {
       return;
     }
 
+    const userMessage = createChatMessage('user', message);
+    const requestMessages = [...state.messages, userMessage];
+
     dispatch({
       type: 'submissionStarted',
-      message: createChatMessage('user', message),
+      message: userMessage,
     });
 
     try {
-      const response = await createChatCompletion(message);
+      const response = await createChatCompletion(toRequestMessages(requestMessages));
 
       dispatch({
         type: 'submissionSucceeded',

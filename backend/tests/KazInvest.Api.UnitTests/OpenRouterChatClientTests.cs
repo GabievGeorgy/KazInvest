@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 using FluentAssertions;
 using KazInvest.Api.Configuration;
 using KazInvest.Api.Services.OpenRouter;
@@ -13,6 +14,54 @@ namespace KazInvest.Api.UnitTests;
 [TestClass]
 public class OpenRouterChatClientTests
 {
+    [TestMethod]
+    public async Task CreateCompletionAsync_SendsEntireMessageHistory()
+    {
+        JsonDocument? capturedPayload = null;
+
+        var handler = new StubHttpMessageHandler(
+            request =>
+            {
+                capturedPayload = JsonDocument.Parse(request.Content!.ReadAsStringAsync().GetAwaiter().GetResult());
+
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = JsonContent.Create(
+                        new
+                        {
+                            model = "openai/gpt-4o-mini",
+                            choices = new[]
+                            {
+                                new
+                                {
+                                    message = new
+                                    {
+                                        role = "assistant",
+                                        content = "Hello from OpenRouter",
+                                    },
+                                },
+                            },
+                        }),
+                };
+            });
+        using var httpClient = new HttpClient(handler);
+        var client = CreateClient(httpClient);
+
+        await client.CreateCompletionAsync(
+        [
+            new OpenRouterChatMessage("user", "Hello"),
+            new OpenRouterChatMessage("assistant", "Hi there"),
+            new OpenRouterChatMessage("user", "Can you elaborate?"),
+        ]);
+
+        capturedPayload.Should().NotBeNull();
+        var messages = capturedPayload!.RootElement.GetProperty("messages");
+        messages.GetArrayLength().Should().Be(3);
+        messages[0].GetProperty("content").GetString().Should().Be("Hello");
+        messages[1].GetProperty("role").GetString().Should().Be("assistant");
+        messages[2].GetProperty("content").GetString().Should().Be("Can you elaborate?");
+    }
+
     [TestMethod]
     public async Task CreateCompletionAsync_ReturnsCompletion_WhenResponseIsValid()
     {
@@ -39,7 +88,7 @@ public class OpenRouterChatClientTests
         using var httpClient = new HttpClient(handler);
         var client = CreateClient(httpClient);
 
-        var response = await client.CreateCompletionAsync("Hello");
+        var response = await client.CreateCompletionAsync([new OpenRouterChatMessage("user", "Hello")]);
 
         response.Content.Should().Be("Hello from OpenRouter");
         response.Model.Should().Be("openai/gpt-4o-mini");
@@ -51,7 +100,7 @@ public class OpenRouterChatClientTests
         using var httpClient = new HttpClient(new StubHttpMessageHandler(_ => new HttpResponseMessage(HttpStatusCode.OK)));
         var client = CreateClient(httpClient, new OpenRouterOptions { ApiKey = "" });
 
-        var action = async () => await client.CreateCompletionAsync("Hello");
+        var action = async () => await client.CreateCompletionAsync([new OpenRouterChatMessage("user", "Hello")]);
 
         var exception = await action.Should().ThrowAsync<ChatProviderException>();
         exception.Which.ErrorType.Should().Be(ChatProviderErrorType.Configuration);
@@ -69,7 +118,7 @@ public class OpenRouterChatClientTests
         using var httpClient = new HttpClient(handler);
         var client = CreateClient(httpClient);
 
-        var action = async () => await client.CreateCompletionAsync("Hello");
+        var action = async () => await client.CreateCompletionAsync([new OpenRouterChatMessage("user", "Hello")]);
 
         var exception = await action.Should().ThrowAsync<ChatProviderException>();
         exception.Which.ErrorType.Should().Be(ChatProviderErrorType.InvalidResponse);

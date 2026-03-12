@@ -17,7 +17,7 @@ public sealed class OpenRouterChatClient(
     private readonly ILogger<OpenRouterChatClient> _logger = logger;
 
     public async Task<OpenRouterChatCompletion> CreateCompletionAsync(
-        string message,
+        IReadOnlyList<OpenRouterChatMessage> messages,
         CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(_options.ApiKey))
@@ -27,7 +27,7 @@ public sealed class OpenRouterChatClient(
 
         var request = new OpenRouterChatRequest(
             _options.Model,
-            [new OpenRouterChatMessage("user", message)]);
+            messages);
 
         try
         {

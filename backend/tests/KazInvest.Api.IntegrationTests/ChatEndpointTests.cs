@@ -19,10 +19,12 @@ public class ChatEndpointTests
     public async Task Post_Chat_ReturnsReplyFromChatClient()
     {
         await using var factory = CreateFactory(new StubOpenRouterChatClient(
-            message => Task.FromResult(new OpenRouterChatCompletion($"Echo: {message}", "stub-model"))));
+            messages => Task.FromResult(new OpenRouterChatCompletion($"Echo: {messages[^1].Content}", "stub-model"))));
         using var client = factory.CreateClient();
 
-        var response = await client.PostAsJsonAsync("/api/chat", new ChatRequest("Hello"));
+        var response = await client.PostAsJsonAsync(
+            "/api/chat",
+            new ChatRequest([new ChatMessageRequest("user", "Hello")]));
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -39,13 +41,43 @@ public class ChatEndpointTests
             _ => Task.FromResult(new OpenRouterChatCompletion("unused", "unused"))));
         using var client = factory.CreateClient();
 
-        var response = await client.PostAsJsonAsync("/api/chat", new ChatRequest(" "));
+        var response = await client.PostAsJsonAsync(
+            "/api/chat",
+            new ChatRequest([new ChatMessageRequest("user", " ")]));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         using var payload = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
-        payload.RootElement.GetProperty("errors").GetProperty("message")[0].GetString()
-            .Should().Be("Message is required.");
+        payload.RootElement.GetProperty("errors").GetProperty("messages")[0].GetString()
+            .Should().Be("Message content is required.");
+    }
+
+    [TestMethod]
+    public async Task Post_Chat_ForwardsMessageHistoryToChatClient()
+    {
+        IReadOnlyList<OpenRouterChatMessage>? forwardedMessages = null;
+
+        await using var factory = CreateFactory(new StubOpenRouterChatClient(
+            messages =>
+            {
+                forwardedMessages = messages;
+                return Task.FromResult(new OpenRouterChatCompletion("Context-aware reply", "stub-model"));
+            }));
+        using var client = factory.CreateClient();
+
+        var request = new ChatRequest(
+        [
+            new ChatMessageRequest("user", "Hello"),
+            new ChatMessageRequest("assistant", "Hi there"),
+            new ChatMessageRequest("user", "What about my portfolio?"),
+        ]);
+
+        var response = await client.PostAsJsonAsync("/api/chat", request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        forwardedMessages.Should().NotBeNull();
+        forwardedMessages!.Select(message => message.Role).Should().Equal("user", "assistant", "user");
+        forwardedMessages.Select(message => message.Content).Should().Equal("Hello", "Hi there", "What about my portfolio?");
     }
 
     [TestMethod]
@@ -56,7 +88,9 @@ public class ChatEndpointTests
                 ChatProviderException.UpstreamFailure(HttpStatusCode.TooManyRequests))));
         using var client = factory.CreateClient();
 
-        var response = await client.PostAsJsonAsync("/api/chat", new ChatRequest("Hello"));
+        var response = await client.PostAsJsonAsync(
+            "/api/chat",
+            new ChatRequest([new ChatMessageRequest("user", "Hello")]));
 
         response.StatusCode.Should().Be(HttpStatusCode.BadGateway);
     }
@@ -68,7 +102,9 @@ public class ChatEndpointTests
             _ => Task.FromException<OpenRouterChatCompletion>(ChatProviderException.Timeout())));
         using var client = factory.CreateClient();
 
-        var response = await client.PostAsJsonAsync("/api/chat", new ChatRequest("Hello"));
+        var response = await client.PostAsJsonAsync(
+            "/api/chat",
+            new ChatRequest([new ChatMessageRequest("user", "Hello")]));
 
         response.StatusCode.Should().Be(HttpStatusCode.GatewayTimeout);
     }
@@ -90,13 +126,13 @@ public class ChatEndpointTests
     }
 
     private sealed class StubOpenRouterChatClient(
-        Func<string, Task<OpenRouterChatCompletion>> onCreateCompletion) : IOpenRouterChatClient
+        Func<IReadOnlyList<OpenRouterChatMessage>, Task<OpenRouterChatCompletion>> onCreateCompletion) : IOpenRouterChatClient
     {
         public Task<OpenRouterChatCompletion> CreateCompletionAsync(
-            string message,
+            IReadOnlyList<OpenRouterChatMessage> messages,
             CancellationToken cancellationToken = default)
         {
-            return onCreateCompletion(message);
+            return onCreateCompletion(messages);
         }
     }
 }

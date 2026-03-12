@@ -1,5 +1,6 @@
 using KazInvest.Api.Contracts;
 using KazInvest.Api.Configuration;
+using KazInvest.Api.Handlers.Chat;
 using KazInvest.Api.Services;
 using KazInvest.Api.Services.OpenRouter;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -83,18 +84,18 @@ app.MapPost(
             ILogger<Program> logger,
             CancellationToken cancellationToken) =>
         {
-            if (string.IsNullOrWhiteSpace(request.Message))
+            var validationErrors = ChatRequestValidation.Validate(request);
+
+            if (validationErrors is not null)
             {
-                return TypedResults.ValidationProblem(
-                    new Dictionary<string, string[]>
-                    {
-                        ["message"] = ["Message is required."],
-                    });
+                return TypedResults.ValidationProblem(validationErrors);
             }
 
             try
             {
-                var completion = await chatClient.CreateCompletionAsync(request.Message, cancellationToken);
+                var completion = await chatClient.CreateCompletionAsync(
+                    ChatRequestMappings.ToOpenRouterMessages(request),
+                    cancellationToken);
 
                 return TypedResults.Ok(new ChatResponse(completion.Content, completion.Model));
             }
