@@ -30,6 +30,7 @@ npm run dev
 cd backend
 dotnet restore .\kaz-invest.slnx --use-lock-file
 dotnet test .\kaz-invest.slnx
+$env:OpenRouter__ApiKey = "your-openrouter-api-key"
 dotnet run --project .\src\KazInvest.Api\KazInvest.Api.csproj
 ```
 
@@ -39,4 +40,5 @@ dotnet run --project .\src\KazInvest.Api\KazInvest.Api.csproj
 
 - The backend is pinned to `.NET SDK 10.0.200` in `backend/global.json`.
 - If the required SDK is not installed, `dotnet restore`, `build`, and `test` will fail until it is added locally.
+- Configure OpenRouter via `backend/src/KazInvest.Api/appsettings.json` and override secrets with `OpenRouter__ApiKey`.
 - Playwright browser binaries are not committed; install them after `npm install`.
