@@ -33,6 +33,8 @@ dotnet test .\kaz-invest.slnx
 dotnet run --project .\src\KazInvest.Api\KazInvest.Api.csproj
 ```
 
+`dotnet run` uses the local launch profile, starts in `Development`, and exposes Swagger UI at `http://localhost:5000/swagger`.
+
 ## Notes
 
 - The backend is pinned to `.NET SDK 10.0.200` in `backend/global.json`.
