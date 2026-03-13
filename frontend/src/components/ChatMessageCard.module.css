@@ -2,16 +2,56 @@
   width: 100%;
 }
 
+.metaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
 .model {
   display: inline-block;
-  margin-top: 12px;
-  color: rgba(166, 185, 216, 0.72);
-  font-size: var(--font-size-caption);
-  line-height: 1.3;
 }
 
 .assistantMessage {
   color: var(--text-primary);
+}
+
+.copyButton {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease,
+    filter 160ms ease;
+}
+
+.copyButton:hover {
+  background: transparent;
+  filter: brightness(1.1);
+}
+
+.copyButton:active {
+  transform: translateY(1px);
+}
+
+.copyIcon {
+  display: block;
+  width: 19px;
+  height: 19px;
+}
+
+.confirmIcon {
+  width: 20px;
+  height: 20px;
 }
 
 .userMessage {
@@ -30,6 +70,12 @@
 }
 
 @media (max-width: 640px) {
+  .copyButton {
+    width: 26px;
+    height: 26px;
+    border-radius: 9px;
+  }
+
   .content {
     padding: 16px 18px;
     border-radius: 20px;

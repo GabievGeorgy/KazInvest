@@ -28,3 +28,9 @@
   line-height: var(--line-height-body);
   color: var(--text-muted);
 }
+
+.subtext {
+  font-size: var(--font-size-subtext);
+  line-height: 1.3;
+  color: rgba(166, 185, 216, 0.72);
+}

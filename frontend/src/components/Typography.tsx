@@ -25,3 +25,6 @@ export function UiText({ children, className }: TypographyProps) {
   return <span className={joinClassNames(styles.uiText, className)}>{children}</span>;
 }
 
+export function Subtext({ children, className }: TypographyProps) {
+  return <span className={joinClassNames(styles.subtext, className)}>{children}</span>;
+}

@@ -10,6 +10,7 @@
   --font-size-heading: clamp(1.8rem, 3.2vw, 2.55rem);
   --font-size-body: clamp(1.06rem, 1.7vw, 1.34rem);
   --font-size-caption: 0.95rem;
+  --font-size-subtext: clamp(0.85rem, 0.7rem + 0.5vw, 0.95rem);
   --line-height-tight: 1.1;
   --line-height-body: 1.45;
   --page-background: #072e6a;
