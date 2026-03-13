@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import type { ChatMessage } from '../features/chat/models/chatMessage';
 import { ChatMessageCard } from './ChatMessageCard';
 import styles from './ChatConversation.module.css';
@@ -7,7 +7,7 @@ type ChatConversationProps = {
   messages: ChatMessage[];
 };
 
-export function ChatConversation({ messages }: ChatConversationProps) {
+function ChatConversationInner({ messages }: ChatConversationProps) {
   const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -26,3 +26,5 @@ export function ChatConversation({ messages }: ChatConversationProps) {
     </section>
   );
 }
+
+export const ChatConversation = memo(ChatConversationInner);

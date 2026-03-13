@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import checkIcon from '../assets/icons/check.svg';
 import copyIcon from '../assets/icons/copy.svg';
 import type { ChatMessage } from '../features/chat/models/chatMessage';
@@ -10,7 +10,7 @@ type ChatMessageCardProps = {
   message: ChatMessage;
 };
 
-export function ChatMessageCard({ message }: ChatMessageCardProps) {
+function ChatMessageCardInner({ message }: ChatMessageCardProps) {
   const isAssistant = message.role === 'assistant';
   const [isCopied, setIsCopied] = useState(false);
   const resetTimerRef = useRef<number | null>(null);
@@ -74,6 +74,8 @@ export function ChatMessageCard({ message }: ChatMessageCardProps) {
     </article>
   );
 }
+
+export const ChatMessageCard = memo(ChatMessageCardInner);
 
 async function copyTextToClipboard(text: string) {
   try {
