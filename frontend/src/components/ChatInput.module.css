@@ -24,7 +24,7 @@
 }
 
 .sendSide {
-  padding: 0;
+  align-items: stretch;
 }
 
 .field {
