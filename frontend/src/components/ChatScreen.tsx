@@ -23,16 +23,16 @@ export function ChatScreen() {
       <section className={styles.panel}>
         <div className={styles.content}>
           {hasMessages ? (
-            <div className={styles.toolbar}>
+            <div className={`${styles.column} ${styles.toolbar}`}>
               <ClearChatButton onClick={clearChat} disabled={isSubmitting} />
             </div>
           ) : null}
 
-          <div className={styles.body}>
+          <div className={`${styles.column} ${styles.body}`}>
             {hasMessages ? <ChatConversation messages={messages} /> : <EmptyChatState />}
           </div>
 
-          <div className={styles.inputSlot}>
+          <div className={`${styles.column} ${styles.inputSlot}`}>
             <AppErrorBanner />
             <ChatInput
               value={draft}

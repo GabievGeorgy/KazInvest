@@ -20,7 +20,7 @@ export function AppErrorBanner() {
         onClick={clearError}
         aria-label="Dismiss error"
       >
-        <img src={crossIcon} alt="" className={styles.dismissIcon} />
+        <img src={crossIcon} alt="" className={baseStyles.icon} />
       </button>
     </div>
   );

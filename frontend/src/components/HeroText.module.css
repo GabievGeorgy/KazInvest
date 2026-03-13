@@ -1,19 +1,13 @@
 .content {
   margin-top: 48px;
-  max-width: var(--chat-column-width);
 }
 
 .description {
   margin: 26px 0 0;
-  max-width: var(--chat-column-width);
 }
 
 @media (max-width: 640px) {
   .content {
     margin-top: 32px;
-  }
-
-  .description {
-    max-width: 100%;
   }
 }

@@ -1,6 +1,7 @@
 import checkIcon from '../assets/icons/check.svg';
 import crossIcon from '../assets/icons/cross.svg';
 import baseStyles from './Buttons/IconButtonBase.module.css';
+import { UiText } from './Typography';
 import styles from './ChatInput.module.css';
 
 type ChatVoiceEntryProps = {
@@ -25,9 +26,7 @@ export function ChatVoiceEntry({ isProcessing, onCancel, onConfirm }: ChatVoiceE
       </div>
 
       <div className={`${styles.field} ${styles.voiceField}`} role="status" aria-live="polite">
-        <span className={styles.voiceStatusLabel}>
-          {isProcessing ? 'Transcribing...' : 'Recording...'}
-        </span>
+        <UiText>{isProcessing ? 'Transcribing...' : 'Recording...'}</UiText>
       </div>
 
       <div className={styles.voiceSide}>

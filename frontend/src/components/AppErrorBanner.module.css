@@ -1,6 +1,4 @@
 .banner {
-  width: var(--chat-column-width);
-  max-width: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -12,12 +10,6 @@
 }
 
 .dismissButton {
-  width: 24px;
-  height: 24px;
-}
-
-.dismissIcon {
-  display: block;
   width: 24px;
   height: 24px;
 }

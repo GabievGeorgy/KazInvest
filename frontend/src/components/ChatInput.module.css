@@ -67,13 +67,6 @@
   padding: 0 12px 0 6px;
 }
 
-.voiceStatusLabel {
-  color: var(--text-muted);
-  font-size: var(--font-size-body);
-  font-weight: 400;
-  line-height: var(--line-height-body);
-}
-
 .voiceConfirmButton {
   align-self: stretch;
   background: var(--surface-brand);

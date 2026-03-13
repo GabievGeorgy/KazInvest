@@ -34,7 +34,6 @@
 
 .content {
   margin: 14px 0 0;
-  max-width: none;
 }
 
 @media (max-width: 640px) {
