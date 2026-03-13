@@ -22,12 +22,41 @@
   --badge-shadow: 0 14px 24px rgba(8, 27, 67, 0.22);
   --panel-shadow: 0 18px 42px rgba(3, 17, 47, 0.2);
   --button-shadow: 0 12px 22px rgba(6, 28, 74, 0.22);
+  --scrollbar-thumb: rgba(166, 185, 216, 0.42);
+  --scrollbar-thumb-hover: rgba(211, 228, 255, 0.56);
+  --scrollbar-track: rgba(8, 41, 94, 0.24);
   color: var(--text-primary);
   background: var(--page-background);
 }
 
 * {
   box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* WebKit browsers use pseudo-elements instead of scrollbar-color. */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 body {
