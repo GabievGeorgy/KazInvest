@@ -16,7 +16,7 @@ export function useChatInputVoice({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const shouldRestoreFocusRef = useRef(false);
   const wasVoiceModeActiveRef = useRef(false);
-  const [isVoiceLocalePickerOpen, setIsVoiceLocalePickerOpen] = useState(false);
+  const [isVoiceLocalePickerRequested, setIsVoiceLocalePickerRequested] = useState(false);
   const { liveTranscript, status, startRecording, cancelRecording, confirmRecording } = useVoiceRecognition({
     onTranscript: onVoiceInput,
   });
@@ -24,6 +24,7 @@ export function useChatInputVoice({
   const isVoiceProcessing = status === 'processing';
   const isVoiceBusy = status !== 'idle';
   const isVoiceRequesting = status === 'requesting';
+  const isVoiceLocalePickerOpen = isVoiceLocalePickerRequested && !isVoiceBusy;
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -51,27 +52,21 @@ export function useChatInputVoice({
     wasVoiceModeActiveRef.current = isVoiceModeActive;
   }, [isSubmitting, isVoiceModeActive]);
 
-  useEffect(() => {
-    if (isVoiceModeActive || status === 'requesting') {
-      setIsVoiceLocalePickerOpen(false);
-    }
-  }, [isVoiceModeActive, status]);
-
   function toggleVoiceLocalePicker() {
     if (isSubmitting || isVoiceBusy) {
       return;
     }
 
-    setIsVoiceLocalePickerOpen((isOpen) => !isOpen);
+    setIsVoiceLocalePickerRequested((isOpen) => !isOpen);
   }
 
   function selectVoiceLocale(locale: VoiceLocale) {
-    setIsVoiceLocalePickerOpen(false);
+    setIsVoiceLocalePickerRequested(false);
     startRecording(locale);
   }
 
   function closeVoiceLocalePicker() {
-    setIsVoiceLocalePickerOpen(false);
+    setIsVoiceLocalePickerRequested(false);
   }
 
   return {
