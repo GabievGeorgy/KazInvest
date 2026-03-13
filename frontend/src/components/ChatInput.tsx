@@ -29,6 +29,7 @@ export function ChatInput({
     isVoiceModeActive,
     isVoiceProcessing,
     isVoiceRequesting,
+    liveTranscript,
     startRecording,
     cancelRecording,
     confirmRecording,
@@ -43,6 +44,7 @@ export function ChatInput({
       {isVoiceModeActive ? (
         <ChatVoiceEntry
           isProcessing={isVoiceProcessing}
+          liveTranscript={liveTranscript}
           onCancel={cancelRecording}
           onConfirm={confirmRecording}
         />

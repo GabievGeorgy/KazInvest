@@ -47,6 +47,7 @@ function collectTranscript(results: SpeechRecognitionResultList) {
 
 export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions) {
   const [status, setStatus] = useState<VoiceRecognitionStatus>('idle');
+  const [liveTranscript, setLiveTranscript] = useState('');
   const onTranscriptRef = useRef(onTranscript);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const statusRef = useRef<VoiceRecognitionStatus>('idle');
@@ -63,6 +64,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
 
   function updateTranscript(nextTranscript: string) {
     transcriptRef.current = nextTranscript;
+    setLiveTranscript(nextTranscript);
   }
 
   function commitTranscript(nextTranscript: string) {
@@ -225,6 +227,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
   }, []);
 
   return {
+    liveTranscript,
     status,
     startRecording,
     cancelRecording,

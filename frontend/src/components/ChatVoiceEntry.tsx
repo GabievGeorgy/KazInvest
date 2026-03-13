@@ -6,11 +6,19 @@ import styles from './ChatInput.module.css';
 
 type ChatVoiceEntryProps = {
   isProcessing: boolean;
+  liveTranscript: string;
   onCancel: () => void;
   onConfirm: () => void;
 };
 
-export function ChatVoiceEntry({ isProcessing, onCancel, onConfirm }: ChatVoiceEntryProps) {
+export function ChatVoiceEntry({
+  isProcessing,
+  liveTranscript,
+  onCancel,
+  onConfirm,
+}: ChatVoiceEntryProps) {
+  const statusText = liveTranscript || (isProcessing ? 'Transcribing...' : 'Recording...');
+
   return (
     <div className={`${styles.input} ${styles.voiceInput}`}>
       <div className={styles.voiceSide}>
@@ -26,7 +34,7 @@ export function ChatVoiceEntry({ isProcessing, onCancel, onConfirm }: ChatVoiceE
       </div>
 
       <div className={`${styles.field} ${styles.voiceField}`} role="status" aria-live="polite">
-        <UiText>{isProcessing ? 'Transcribing...' : 'Recording...'}</UiText>
+        <UiText>{statusText}</UiText>
       </div>
 
       <div className={styles.voiceSide}>

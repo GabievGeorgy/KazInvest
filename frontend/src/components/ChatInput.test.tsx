@@ -137,6 +137,8 @@ describe('ChatInput', () => {
       recognition.emitResult('Recognized voice draft');
     });
 
+    expect(screen.getByText(/recognized voice draft/i)).toBeInTheDocument();
+
     await user.click(screen.getByRole('button', { name: /use recognized text/i }));
 
     expect(recognition.stop).toHaveBeenCalledTimes(1);
