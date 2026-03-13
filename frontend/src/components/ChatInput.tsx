@@ -23,14 +23,17 @@ export function ChatInput({
   const { isMobile } = useViewport();
   const placeholder = isMobile ? 'Ask anything' : 'Ask whatever you want';
   const {
+    closeVoiceLocalePicker,
     handleSubmit,
     inputRef,
     isVoiceBusy,
+    isVoiceLocalePickerOpen,
     isVoiceModeActive,
     isVoiceProcessing,
     isVoiceRequesting,
     liveTranscript,
-    startRecording,
+    toggleVoiceLocalePicker,
+    selectVoiceLocale,
     cancelRecording,
     confirmRecording,
   } = useChatInputVoice({
@@ -53,12 +56,15 @@ export function ChatInput({
           value={value}
           onChange={onChange}
           onSubmit={handleSubmit}
-          onVoiceInputStart={startRecording}
+          onVoiceLocalePickerClose={closeVoiceLocalePicker}
+          onVoiceInputStart={toggleVoiceLocalePicker}
+          onVoiceLocaleSelect={selectVoiceLocale}
           inputRef={inputRef}
           placeholder={placeholder}
           isSubmitting={isSubmitting}
           canSubmit={canSubmit}
           isVoiceBusy={isVoiceBusy}
+          isVoiceLocalePickerOpen={isVoiceLocalePickerOpen}
           isVoiceRequesting={isVoiceRequesting}
         />
       )}

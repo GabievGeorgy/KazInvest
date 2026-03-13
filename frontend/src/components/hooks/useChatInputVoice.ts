@@ -1,5 +1,6 @@
-import { useEffect, useRef, type SubmitEvent } from 'react';
+import { useEffect, useRef, useState, type SubmitEvent } from 'react';
 import { useVoiceRecognition } from '../../features/voice/hooks/useVoiceRecognition';
+import type { VoiceLocale } from '../../features/voice/voiceLocale';
 
 type UseChatInputVoiceOptions = {
   isSubmitting: boolean;
@@ -15,6 +16,7 @@ export function useChatInputVoice({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const shouldRestoreFocusRef = useRef(false);
   const wasVoiceModeActiveRef = useRef(false);
+  const [isVoiceLocalePickerOpen, setIsVoiceLocalePickerOpen] = useState(false);
   const { liveTranscript, status, startRecording, cancelRecording, confirmRecording } = useVoiceRecognition({
     onTranscript: onVoiceInput,
   });
@@ -26,7 +28,7 @@ export function useChatInputVoice({
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (isVoiceModeActive || status === 'requesting') {
+    if (isVoiceLocalePickerOpen || isVoiceModeActive || status === 'requesting') {
       return;
     }
 
@@ -49,15 +51,41 @@ export function useChatInputVoice({
     wasVoiceModeActiveRef.current = isVoiceModeActive;
   }, [isSubmitting, isVoiceModeActive]);
 
+  useEffect(() => {
+    if (isVoiceModeActive || status === 'requesting') {
+      setIsVoiceLocalePickerOpen(false);
+    }
+  }, [isVoiceModeActive, status]);
+
+  function toggleVoiceLocalePicker() {
+    if (isSubmitting || isVoiceBusy) {
+      return;
+    }
+
+    setIsVoiceLocalePickerOpen((isOpen) => !isOpen);
+  }
+
+  function selectVoiceLocale(locale: VoiceLocale) {
+    setIsVoiceLocalePickerOpen(false);
+    startRecording(locale);
+  }
+
+  function closeVoiceLocalePicker() {
+    setIsVoiceLocalePickerOpen(false);
+  }
+
   return {
+    closeVoiceLocalePicker,
     handleSubmit,
     inputRef,
     isVoiceBusy,
+    isVoiceLocalePickerOpen,
     isVoiceModeActive,
     isVoiceProcessing,
     isVoiceRequesting,
     liveTranscript,
-    startRecording,
+    toggleVoiceLocalePicker,
+    selectVoiceLocale,
     cancelRecording,
     confirmRecording,
   };

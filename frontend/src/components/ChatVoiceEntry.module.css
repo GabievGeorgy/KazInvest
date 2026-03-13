@@ -1,0 +1,34 @@
+.surface {
+  align-items: center;
+}
+
+.side {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.field {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+}
+
+.confirmButton {
+  align-self: stretch;
+  background: var(--surface-brand);
+  box-shadow: var(--button-shadow);
+}
+
+.icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.confirmIcon {
+  width: 32px;
+  height: 32px;
+}

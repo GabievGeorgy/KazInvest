@@ -121,6 +121,7 @@ describe('ChatInput', () => {
     render(<ChatInputHarness />);
 
     await user.click(screen.getByRole('button', { name: /start voice input/i }));
+    await user.click(screen.getByRole('button', { name: /use english for voice input/i }));
 
     const recognition = MockSpeechRecognition.instances[0];
 
@@ -162,6 +163,7 @@ describe('ChatInput', () => {
     render(<ChatInputHarness initialValue="Keep this text" />);
 
     await user.click(screen.getByRole('button', { name: /start voice input/i }));
+    await user.click(screen.getByRole('button', { name: /use english for voice input/i }));
 
     const recognition = MockSpeechRecognition.instances[0];
 
@@ -195,9 +197,24 @@ describe('ChatInput', () => {
     expect(sendButton).toBeEnabled();
 
     await user.click(screen.getByRole('button', { name: /start voice input/i }));
+    await user.click(screen.getByRole('button', { name: /use english for voice input/i }));
 
     expect(MockSpeechRecognition.instances[0].start).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: /send message/i })).toBeDisabled();
+  });
+
+  it('starts voice recognition with the selected language', async () => {
+    const user = userEvent.setup();
+
+    vi.stubGlobal('webkitSpeechRecognition', MockSpeechRecognition);
+
+    render(<ChatInputHarness />);
+
+    await user.click(screen.getByRole('button', { name: /start voice input/i }));
+    await user.click(screen.getByRole('button', { name: /use russian for voice input/i }));
+
+    expect(MockSpeechRecognition.instances[0].lang).toBe('ru-RU');
+    expect(MockSpeechRecognition.instances[0].start).toHaveBeenCalledTimes(1);
   });
 
   it('shows unsupported browser errors in the shared banner', async () => {
@@ -206,6 +223,7 @@ describe('ChatInput', () => {
     render(<ChatInputHarness />);
 
     await user.click(screen.getByRole('button', { name: /start voice input/i }));
+    await user.click(screen.getByRole('button', { name: /use english for voice input/i }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       /voice input is not supported in this browser\./i,

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppError } from '../../../contexts/useAppError';
+import type { VoiceLocale } from '../voiceLocale';
 
 export type VoiceRecognitionStatus = 'idle' | 'requesting' | 'recording' | 'processing';
 
@@ -154,7 +155,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
     return recognition;
   }
 
-  function startRecording() {
+  function startRecording(locale: VoiceLocale) {
     if (statusRef.current !== 'idle') {
       return;
     }
@@ -166,6 +167,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
       return;
     }
 
+    recognition.lang = locale;
     shouldCommitRef.current = false;
     shouldDiscardRef.current = false;
     hasErrorRef.current = false;
