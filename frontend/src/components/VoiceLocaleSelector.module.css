@@ -1,0 +1,37 @@
+.options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.button {
+  min-width: 44px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  font-size: var(--font-size-caption);
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    filter 160ms ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+  filter: brightness(1.04);
+}
+
+@media (max-width: 640px) {
+  .options {
+    gap: 6px;
+  }
+
+  .button {
+    min-width: 40px;
+    padding: 8px 10px;
+  }
+}

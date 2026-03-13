@@ -1,12 +1,11 @@
 import { useEffect, useRef, type KeyboardEvent, type RefObject, type SubmitEvent } from 'react';
 import type { VoiceLocale } from '../features/voice/voiceLocale';
-import { voiceLocaleOptions } from '../features/voice/voiceLocale';
 import { SendMessageButton } from './Buttons/SendMessageButton';
 import { VoiceInputButton } from './Buttons/VoiceInputButton';
 import shellStyles from './ChatEntryShell.module.css';
 import styles from './ChatTextEntry.module.css';
 import { useAutosizeTextarea } from './hooks/useAutosizeTextarea';
-import { UiText } from './Typography';
+import { VoiceLocalePopover } from './VoiceLocalePopover';
 
 const maxTextareaRows = 5;
 const maxMessageLength = 4096;
@@ -75,24 +74,7 @@ export function ChatTextEntry({
 
   return (
     <div className={styles.shell} ref={inputShellRef}>
-      {isVoiceLocalePickerOpen ? (
-        <div className={styles.localePopover} role="group" aria-label="Voice input language">
-          <UiText>Choose language</UiText>
-          <div className={styles.localeOptions}>
-            {voiceLocaleOptions.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                className={styles.localeButton}
-                aria-label={`Use ${option.label} for voice input`}
-                onClick={() => onVoiceLocaleSelect(option.value)}
-              >
-                {option.shortLabel}
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      {isVoiceLocalePickerOpen ? <VoiceLocalePopover onSelect={onVoiceLocaleSelect} /> : null}
 
       <form className={shellStyles.surface} onSubmit={onSubmit}>
         <div className={styles.side}>
