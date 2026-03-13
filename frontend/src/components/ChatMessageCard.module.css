@@ -1,51 +1,37 @@
-.card {
+.message {
   width: 100%;
-  padding: 24px 28px;
-  border-radius: 24px;
-  backdrop-filter: blur(14px);
-}
-
-.assistantCard {
-  background: rgba(9, 39, 89, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.userCard {
-  background: rgba(28, 76, 155, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.heading {
-  margin: 0;
 }
 
 .model {
-  color: var(--text-muted);
+  display: inline-block;
+  margin-top: 12px;
+  color: rgba(166, 185, 216, 0.72);
   font-size: var(--font-size-caption);
   line-height: 1.3;
 }
 
+.assistantMessage {
+  color: var(--text-primary);
+}
+
+.userMessage {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .content {
-  margin: 14px 0 0;
+  max-width: min(540px, 100%);
+  padding: 18px 22px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
   white-space: pre-wrap;
+  backdrop-filter: blur(14px);
 }
 
 @media (max-width: 640px) {
-  .card {
-    padding: 18px 20px;
+  .content {
+    padding: 16px 18px;
     border-radius: 20px;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
   }
 }

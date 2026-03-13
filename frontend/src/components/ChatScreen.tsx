@@ -20,8 +20,8 @@ export function ChatScreen() {
 
   return (
     <main className={styles.pageShell}>
-      <section className={styles.panel}>
-        <div className={styles.content}>
+      <section className={`${styles.panel} ${hasMessages ? styles.conversationPanel : styles.landingPanel}`}>
+        <div className={`${styles.content} ${hasMessages ? styles.conversationContent : styles.landingContent}`}>
           {hasMessages ? (
             <div className={`${styles.column} ${styles.toolbar}`}>
               <ClearChatButton onClick={clearChat} disabled={isSubmitting} />

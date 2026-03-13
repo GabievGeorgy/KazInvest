@@ -9,6 +9,7 @@
   padding: clamp(32px, 5vw, 64px) clamp(22px, 4vw, 56px);
   background: var(--page-background);
   overflow: hidden;
+  transition: padding 220ms ease;
 }
 
 .content {
@@ -17,6 +18,7 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 16px;
+  transition: gap 220ms ease;
 }
 
 .column {
@@ -47,6 +49,36 @@
   flex-direction: column;
   gap: 12px;
   padding-top: 8px;
+  transition:
+    padding-top 220ms ease,
+    transform 220ms ease;
+}
+
+.landingPanel {
+  padding-top: clamp(32px, 5vw, 64px);
+  padding-bottom: clamp(32px, 5vw, 64px);
+}
+
+.conversationPanel {
+  padding-top: clamp(18px, 2.5vw, 28px);
+  padding-bottom: clamp(14px, 2vw, 22px);
+}
+
+.landingContent {
+  gap: 16px;
+}
+
+.landingContent .inputSlot {
+  transform: translateY(-10px);
+}
+
+.conversationContent {
+  gap: 10px;
+}
+
+.conversationContent .inputSlot {
+  padding-top: 0;
+  transform: translateY(0);
 }
 
 @media (max-width: 640px) {
@@ -55,7 +87,21 @@
     padding: 24px 18px 20px;
   }
 
+  .landingPanel {
+    padding-top: 24px;
+    padding-bottom: 20px;
+  }
+
+  .conversationPanel {
+    padding-top: 14px;
+    padding-bottom: 12px;
+  }
+
   .body {
     padding-right: 0;
+  }
+
+  .conversationContent {
+    gap: 8px;
   }
 }
