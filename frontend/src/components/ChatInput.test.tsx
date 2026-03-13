@@ -2,6 +2,8 @@ import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach } from 'vitest';
 import { useState } from 'react';
+import { AppErrorProvider } from '../contexts/AppErrorProvider';
+import { AppErrorBanner } from './AppErrorBanner';
 import { ChatInput } from './ChatInput';
 
 // Builds the minimal SpeechRecognition result shape consumed by the hook.
@@ -90,14 +92,17 @@ function ChatInputHarness({ initialValue = '' }: { initialValue?: string }) {
   const [value, setValue] = useState(initialValue);
 
   return (
-    <ChatInput
-      value={value}
-      onChange={setValue}
-      onSubmit={() => undefined}
-      onVoiceInput={setValue}
-      isSubmitting={false}
-      canSubmit={value.trim().length > 0}
-    />
+    <AppErrorProvider>
+      <AppErrorBanner />
+      <ChatInput
+        value={value}
+        onChange={setValue}
+        onSubmit={() => undefined}
+        onVoiceInput={setValue}
+        isSubmitting={false}
+        canSubmit={value.trim().length > 0}
+      />
+    </AppErrorProvider>
   );
 }
 
@@ -191,5 +196,17 @@ describe('ChatInput', () => {
 
     expect(MockSpeechRecognition.instances[0].start).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('button', { name: /send message/i })).toBeDisabled();
+  });
+
+  it('shows unsupported browser errors in the shared banner', async () => {
+    const user = userEvent.setup();
+
+    render(<ChatInputHarness />);
+
+    await user.click(screen.getByRole('button', { name: /start voice input/i }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /voice input is not supported in this browser\./i,
+    );
   });
 });

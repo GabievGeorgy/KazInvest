@@ -2,6 +2,15 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach } from 'vitest';
 import { ChatScreen } from './ChatScreen';
+import { AppErrorProvider } from '../contexts/AppErrorProvider';
+
+function renderChatScreen() {
+  return render(
+    <AppErrorProvider>
+      <ChatScreen />
+    </AppErrorProvider>,
+  );
+}
 
 describe('ChatScreen', () => {
   afterEach(() => {
@@ -24,7 +33,7 @@ describe('ChatScreen', () => {
       ),
     );
 
-    render(<ChatScreen />);
+    renderChatScreen();
 
     const input = screen.getByRole('textbox', { name: /ask a question/i });
     await user.type(input, 'Hello');
@@ -57,7 +66,7 @@ describe('ChatScreen', () => {
       ),
     );
 
-    render(<ChatScreen />);
+    renderChatScreen();
 
     const input = screen.getByRole('textbox', { name: /ask a question/i });
     await user.type(input, 'Hello');
@@ -93,7 +102,7 @@ describe('ChatScreen', () => {
       ),
     );
 
-    render(<ChatScreen />);
+    renderChatScreen();
 
     const input = screen.getByRole('textbox', { name: /ask a question/i });
     input.focus();
@@ -119,13 +128,38 @@ describe('ChatScreen', () => {
       ),
     );
 
-    render(<ChatScreen />);
+    renderChatScreen();
 
     const input = screen.getByRole('textbox', { name: /ask a question/i });
     await user.type(input, 'Hello');
     await user.keyboard('{Enter}');
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/provider timeout\./i);
+  });
+
+  it('dismisses the shared error banner', async () => {
+    const user = userEvent.setup();
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(JSON.stringify({ detail: 'Provider timeout.' }), {
+          status: 504,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+
+    renderChatScreen();
+
+    const input = screen.getByRole('textbox', { name: /ask a question/i });
+    await user.type(input, 'Hello');
+    await user.keyboard('{Enter}');
+
+    await screen.findByRole('alert');
+    await user.click(screen.getByRole('button', { name: /dismiss error/i }));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('clears the conversation and returns to the empty state', async () => {
@@ -141,7 +175,7 @@ describe('ChatScreen', () => {
       ),
     );
 
-    render(<ChatScreen />);
+    renderChatScreen();
 
     const input = screen.getByRole('textbox', { name: /ask a question/i });
     await user.type(input, 'Hello');

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useAppError } from '../../../contexts/useAppError';
 
 export type VoiceRecognitionStatus = 'idle' | 'requesting' | 'recording' | 'processing';
 
@@ -46,7 +47,6 @@ function collectTranscript(results: SpeechRecognitionResultList) {
 
 export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions) {
   const [status, setStatus] = useState<VoiceRecognitionStatus>('idle');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const onTranscriptRef = useRef(onTranscript);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const statusRef = useRef<VoiceRecognitionStatus>('idle');
@@ -54,6 +54,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
   const shouldCommitRef = useRef(false);
   const shouldDiscardRef = useRef(false);
   const hasErrorRef = useRef(false);
+  const { clearError, showError } = useAppError();
 
   function updateStatus(nextStatus: VoiceRecognitionStatus) {
     statusRef.current = nextStatus;
@@ -106,7 +107,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
 
       hasErrorRef.current = true;
       shouldCommitRef.current = false;
-      setErrorMessage(getVoiceErrorMessage(event.error));
+      showError(getVoiceErrorMessage(event.error));
       updateStatus('idle');
     };
 
@@ -136,13 +137,13 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
       shouldCommitRef.current = false;
 
       if (shouldCommit && nextTranscript) {
-        setErrorMessage(null);
+        clearError();
         commitTranscript(nextTranscript);
         return;
       }
 
       if (previousStatus === 'processing') {
-        setErrorMessage('Voice input could not recognize speech. Try again.');
+        showError('Voice input could not recognize speech. Try again.');
       }
     };
 
@@ -159,7 +160,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
     const recognition = getRecognition();
 
     if (!recognition) {
-      setErrorMessage('Voice input is not supported in this browser.');
+      showError('Voice input is not supported in this browser.');
       return;
     }
 
@@ -167,7 +168,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
     shouldDiscardRef.current = false;
     hasErrorRef.current = false;
     updateTranscript('');
-    setErrorMessage(null);
+    clearError();
     updateStatus('requesting');
 
     try {
@@ -175,7 +176,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
     }
     catch {
       updateStatus('idle');
-      setErrorMessage('Voice input could not be started. Try again.');
+      showError('Voice input could not be started. Try again.');
     }
   }
 
@@ -208,7 +209,7 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
     catch {
       shouldCommitRef.current = false;
       updateStatus('idle');
-      setErrorMessage('Voice input could not be completed. Try again.');
+      showError('Voice input could not be completed. Try again.');
     }
   }
 
@@ -224,7 +225,6 @@ export function useVoiceRecognition({ onTranscript }: UseVoiceRecognitionOptions
   }, []);
 
   return {
-    errorMessage,
     status,
     startRecording,
     cancelRecording,

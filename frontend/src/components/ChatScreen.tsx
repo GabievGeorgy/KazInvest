@@ -1,5 +1,5 @@
 import { ClearChatButton } from './Buttons/ClearChatButton';
-import { ChatErrorNotice } from './ChatErrorNotice';
+import { AppErrorBanner } from './AppErrorBanner';
 import { ChatConversation } from './ChatConversation';
 import { ChatInput } from './ChatInput';
 import { EmptyChatState } from './EmptyChatState';
@@ -11,7 +11,6 @@ export function ChatScreen() {
     draft,
     messages,
     isSubmitting,
-    errorMessage,
     hasMessages,
     canSubmit,
     setDraft,
@@ -34,7 +33,7 @@ export function ChatScreen() {
           </div>
 
           <div className={styles.inputSlot}>
-            {errorMessage ? <ChatErrorNotice message={errorMessage} /> : null}
+            <AppErrorBanner />
             <ChatInput
               value={draft}
               onChange={setDraft}

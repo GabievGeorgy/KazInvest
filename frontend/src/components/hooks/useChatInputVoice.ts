@@ -15,13 +15,7 @@ export function useChatInputVoice({
   const inputRef = useRef<HTMLInputElement>(null);
   const shouldRestoreFocusRef = useRef(false);
   const wasVoiceModeActiveRef = useRef(false);
-  const {
-    errorMessage,
-    status,
-    startRecording,
-    cancelRecording,
-    confirmRecording,
-  } = useVoiceRecognition({
+  const { status, startRecording, cancelRecording, confirmRecording } = useVoiceRecognition({
     onTranscript: onVoiceInput,
   });
   const isVoiceModeActive = status === 'recording' || status === 'processing';
@@ -56,7 +50,6 @@ export function useChatInputVoice({
   }, [isSubmitting, isVoiceModeActive]);
 
   return {
-    errorMessage,
     handleSubmit,
     inputRef,
     isVoiceBusy,

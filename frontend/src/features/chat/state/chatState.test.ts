@@ -22,7 +22,6 @@ describe('chatStateReducer', () => {
 
     expect(nextState.draft).toBe('');
     expect(nextState.isSubmitting).toBe(true);
-    expect(nextState.errorMessage).toBeNull();
     expect(nextState.messages).toEqual([userMessage]);
   });
 
@@ -43,7 +42,7 @@ describe('chatStateReducer', () => {
     expect(nextState.messages).toEqual([userMessage, assistantMessage]);
   });
 
-  it('stores the error message when submission fails', () => {
+  it('stops submitting when submission fails', () => {
     const pendingState = chatStateReducer(initialChatState, {
       type: 'submissionStarted',
       message: createChatMessage('user', 'Hello'),
@@ -51,26 +50,9 @@ describe('chatStateReducer', () => {
 
     const nextState = chatStateReducer(pendingState, {
       type: 'submissionFailed',
-      errorMessage: 'Rate limit exceeded.',
     });
 
     expect(nextState.isSubmitting).toBe(false);
-    expect(nextState.errorMessage).toBe('Rate limit exceeded.');
-  });
-
-  it('clears the error when the draft changes', () => {
-    const failedState = chatStateReducer(initialChatState, {
-      type: 'submissionFailed',
-      errorMessage: 'Rate limit exceeded.',
-    });
-
-    const nextState = chatStateReducer(failedState, {
-      type: 'draftChanged',
-      draft: 'Try again',
-    });
-
-    expect(nextState.draft).toBe('Try again');
-    expect(nextState.errorMessage).toBeNull();
   });
 
   it('resets the chat to its initial state', () => {

@@ -1,4 +1,3 @@
-import { ChatErrorNotice } from './ChatErrorNotice';
 import { ChatTextEntry } from './ChatTextEntry';
 import { ChatVoiceEntry } from './ChatVoiceEntry';
 import { useChatInputVoice } from './hooks/useChatInputVoice';
@@ -24,7 +23,6 @@ export function ChatInput({
   const { isMobile } = useViewport();
   const placeholder = isMobile ? 'Ask anything' : 'Ask whatever you want';
   const {
-    errorMessage: voiceErrorMessage,
     handleSubmit,
     inputRef,
     isVoiceBusy,
@@ -42,8 +40,6 @@ export function ChatInput({
 
   return (
     <>
-      {voiceErrorMessage ? <ChatErrorNotice message={voiceErrorMessage} /> : null}
-
       {isVoiceModeActive ? (
         <ChatVoiceEntry
           isProcessing={isVoiceProcessing}

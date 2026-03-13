@@ -1,4 +1,5 @@
 import { useReducer } from 'react';
+import { useAppError } from '../../../contexts/useAppError';
 import { createChatCompletion, getChatErrorMessage } from '../api/chatApi';
 import { createChatMessage, type ChatMessage } from '../models/chatMessage';
 import { chatStateReducer, initialChatState } from '../state/chatState';
@@ -12,8 +13,10 @@ function toRequestMessages(messages: ChatMessage[]) {
 
 export function useChat() {
   const [state, dispatch] = useReducer(chatStateReducer, initialChatState);
+  const { clearError, showError } = useAppError();
 
   function setDraft(draft: string) {
+    clearError();
     dispatch({ type: 'draftChanged', draft });
   }
 
@@ -22,6 +25,7 @@ export function useChat() {
   }
 
   function clearChat() {
+    clearError();
     dispatch({ type: 'chatCleared' });
   }
 
@@ -39,6 +43,7 @@ export function useChat() {
       type: 'submissionStarted',
       message: userMessage,
     });
+    clearError();
 
     try {
       const response = await createChatCompletion(toRequestMessages(requestMessages));
@@ -49,9 +54,9 @@ export function useChat() {
       });
     }
     catch (error) {
+      showError(getChatErrorMessage(error));
       dispatch({
         type: 'submissionFailed',
-        errorMessage: getChatErrorMessage(error),
       });
     }
   }
@@ -60,7 +65,6 @@ export function useChat() {
     draft: state.draft,
     messages: state.messages,
     isSubmitting: state.isSubmitting,
-    errorMessage: state.errorMessage,
     hasMessages: state.messages.length > 0,
     canSubmit: state.draft.trim().length > 0 && !state.isSubmitting,
     setDraft,
