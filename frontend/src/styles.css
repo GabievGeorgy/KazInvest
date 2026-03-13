@@ -30,6 +30,10 @@
   background: var(--page-background);
 }
 
+html {
+  height: -webkit-fill-available;
+}
+
 * {
   box-sizing: border-box;
   scrollbar-width: thin;
@@ -64,6 +68,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
   background: var(--page-background);
 }
 
@@ -88,4 +95,7 @@ code {
 
 #root {
   min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
