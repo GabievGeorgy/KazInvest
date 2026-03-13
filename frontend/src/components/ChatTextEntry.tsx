@@ -5,6 +5,7 @@ import { useAutosizeTextarea } from './hooks/useAutosizeTextarea';
 import styles from './ChatInput.module.css';
 
 const maxTextareaRows = 5;
+const maxMessageLength = 4096;
 
 type ChatTextEntryProps = {
   value: string;
@@ -53,6 +54,7 @@ export function ChatTextEntry({
           ref={inputRef}
           name="message"
           rows={1}
+          maxLength={maxMessageLength}
           value={value}
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
