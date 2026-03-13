@@ -12,7 +12,7 @@ export function useChatInputVoice({
   onSubmit,
   onVoiceInput,
 }: UseChatInputVoiceOptions) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const shouldRestoreFocusRef = useRef(false);
   const wasVoiceModeActiveRef = useRef(false);
   const { status, startRecording, cancelRecording, confirmRecording } = useVoiceRecognition({
