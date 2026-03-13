@@ -17,7 +17,12 @@ public class ChatRequestValidationTests
         var errors = ChatRequestValidation.Validate(request);
 
         errors.Should().NotBeNull();
-        errors!["messages"].Should().ContainSingle().Which.Should().Be("At least one message is required.");
+        errors!
+            ["messages"]
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .Be("At least one message is required.");
     }
 
     [TestMethod]
@@ -28,14 +33,18 @@ public class ChatRequestValidationTests
         var errors = ChatRequestValidation.Validate(request);
 
         errors.Should().NotBeNull();
-        errors!["messages.role"].Should().ContainSingle().Which.Should().Be("Message role must be one of: user, assistant, system.");
+        errors!
+            ["messages.role"]
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .Be("Message role must be one of: user, assistant.");
     }
 
     [TestMethod]
     public void Validate_ReturnsNull_WhenRequestValid()
     {
-        var request = new ChatRequest(
-        [
+        var request = new ChatRequest([
             new ChatMessageRequest("user", "Hello"),
             new ChatMessageRequest("assistant", "Hi there"),
         ]);
@@ -48,18 +57,18 @@ public class ChatRequestValidationTests
     [TestMethod]
     public void ToOpenRouterMessages_MapsRequestMessages()
     {
-        var request = new ChatRequest(
-        [
+        var request = new ChatRequest([
             new ChatMessageRequest("user", "Hello"),
             new ChatMessageRequest("assistant", "Hi there"),
         ]);
 
         var result = ChatRequestMappings.ToOpenRouterMessages(request);
 
-        result.Should().Equal(
-        [
-            new OpenRouterChatMessage("user", "Hello"),
-            new OpenRouterChatMessage("assistant", "Hi there"),
-        ]);
+        result
+            .Should()
+            .Equal([
+                new OpenRouterChatMessage("user", "Hello"),
+                new OpenRouterChatMessage("assistant", "Hi there"),
+            ]);
     }
 }

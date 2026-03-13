@@ -8,7 +8,6 @@ public static class ChatRequestValidation
     {
         "user",
         "assistant",
-        "system",
     };
 
     public static Dictionary<string, string[]>? Validate(ChatRequest request)
@@ -30,7 +29,10 @@ public static class ChatRequestValidation
 
         if (request.Messages.Any(message => !AllowedRoles.Contains(message.Role)))
         {
-            validationErrors["messages.role"] = ["Message role must be one of: user, assistant, system."];
+            validationErrors["messages.role"] =
+            [
+                "Message role must be one of: user, assistant.",
+            ];
         }
 
         return validationErrors.Count > 0 ? validationErrors : null;
