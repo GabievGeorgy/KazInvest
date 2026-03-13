@@ -1,5 +1,6 @@
 import microphoneIcon from '../../assets/icons/microphone.svg';
 import baseStyles from './IconButtonBase.module.css';
+import styles from './VoiceInputButton.module.css';
 
 type VoiceInputButtonProps = {
   onClick: () => void;
@@ -15,7 +16,7 @@ export function VoiceInputButton({ onClick, disabled = false }: VoiceInputButton
       onClick={onClick}
       disabled={disabled}
     >
-      <img src={microphoneIcon} alt="" className={baseStyles.icon} />
+      <img src={microphoneIcon} alt="" className={styles.icon} />
     </button>
   );
 }
