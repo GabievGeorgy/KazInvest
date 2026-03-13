@@ -29,7 +29,11 @@ export function ChatScreen() {
           ) : null}
 
           <div className={`${styles.column} ${styles.body}`}>
-            {hasMessages ? <ChatConversation messages={messages} /> : <EmptyChatState />}
+            {hasMessages ? (
+              <ChatConversation messages={messages} />
+            ) : (
+              <EmptyChatState onPromptSelect={setDraft} />
+            )}
           </div>
 
           <div className={`${styles.column} ${styles.inputSlot}`}>

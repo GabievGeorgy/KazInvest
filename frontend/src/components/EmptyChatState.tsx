@@ -1,11 +1,18 @@
 import { ChatBadge } from './ChatBadge';
 import { HeroText } from './HeroText';
+import { StarterPrompts } from './StarterPrompts';
+import styles from './EmptyChatState.module.css';
 
-export function EmptyChatState() {
+type EmptyChatStateProps = {
+  onPromptSelect: (prompt: string) => void;
+};
+
+export function EmptyChatState({ onPromptSelect }: EmptyChatStateProps) {
   return (
-    <div>
+    <div className={styles.state}>
       <ChatBadge />
       <HeroText />
+      <StarterPrompts onSelect={onPromptSelect} />
     </div>
   );
 }

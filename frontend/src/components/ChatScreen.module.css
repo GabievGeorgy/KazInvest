@@ -1,16 +1,10 @@
 .pageShell {
-  min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: var(--app-height);
 }
 
 .panel {
-  min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
-  height: 100vh;
-  height: 100svh;
-  height: 100dvh;
+  min-height: var(--app-height);
+  height: var(--app-height);
   box-sizing: border-box;
   display: flex;
   padding:
@@ -94,12 +88,8 @@
 
 @media (max-width: 640px) {
   .panel {
-    height: 100vh;
-    height: 100svh;
-    height: 100dvh;
-    min-height: 100vh;
-    min-height: 100svh;
-    min-height: 100dvh;
+    height: var(--app-height);
+    min-height: var(--app-height);
     padding: 24px 18px max(20px, env(safe-area-inset-bottom));
   }
 

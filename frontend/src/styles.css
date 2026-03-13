@@ -26,6 +26,7 @@
   --scrollbar-thumb: rgba(166, 185, 216, 0.42);
   --scrollbar-thumb-hover: rgba(211, 228, 255, 0.56);
   --scrollbar-track: rgba(8, 41, 94, 0.24);
+  --app-height: 100vh;
   color: var(--text-primary);
   background: var(--page-background);
 }
@@ -67,9 +68,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: var(--app-height);
   min-height: -webkit-fill-available;
   background: var(--page-background);
 }
@@ -94,8 +93,6 @@ code {
 }
 
 #root {
-  min-height: 100vh;
-  min-height: 100svh;
-  min-height: 100dvh;
+  min-height: var(--app-height);
   min-height: -webkit-fill-available;
 }
